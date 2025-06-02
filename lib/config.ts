@@ -52,15 +52,15 @@ export const CONFIG = {
       enabled: true,
       models: {
         'gpt-4o': {
-          enabled: false,
+          enabled: true,
           label: 'GPT-4o',
         },
         'o1-mini': {
-          enabled: false,
+          enabled: true,
           label: 'o1-mini',
         },
         o1: {
-          enabled: false,
+          enabled: true,
           label: 'o1',
         },
       },
