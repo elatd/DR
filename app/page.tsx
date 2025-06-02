@@ -1024,56 +1024,121 @@ export default function Home() {
                   </div>
                 </>
               ) : (
-                <div className='space-y-4 sm:space-y-6 lg:space-y-0'>
-                  <div className='flex flex-col sm:flex-row lg:items-center gap-2'>
-                    <div className='relative flex-1'>
-                      <Input
-                        value={state.query || state.reportPrompt}
-                        onChange={(e) => {
-                          updateState({
-                            reportPrompt: e.target.value,
-                            query: '',
-                          })
-                        }}
-                        placeholder="What would you like to research? (e.g., 'Tesla Q4 2024 financial performance and market impact')"
-                        className='pr-8 text-lg'
-                      />
-                      <Brain className='absolute right-4 top-3 h-5 w-5 text-gray-400' />
-                    </div>
-                    <div className='flex flex-col sm:flex-row lg:flex-nowrap gap-2 sm:items-center'>
-                      <div className='w-full sm:w-[200px]'>
-                        <ModelSelect
-                          value={state.selectedModel}
-                          onValueChange={(value) =>
-                            updateState({ selectedModel: value })
-                          }
-                          triggerClassName='w-full sm:w-[200px]'
+                <Tabs defaultValue="deep-research" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="deep-research">Deep Research</TabsTrigger>
+                    <TabsTrigger value="upload-files">Upload Files</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="deep-research" className="space-y-4">
+                    <div className='flex flex-col sm:flex-row lg:items-center gap-2'>
+                      <div className='relative flex-1'>
+                        <Input
+                          value={state.query || state.reportPrompt}
+                          onChange={(e) => {
+                            updateState({
+                              reportPrompt: e.target.value,
+                              query: '',
+                            })
+                          }}
+                          placeholder="What would you like to research? (e.g., 'Tesla Q4 2024 financial performance and market impact')"
+                          className='pr-8 text-lg'
                         />
+                        <Brain className='absolute right-4 top-3 h-5 w-5 text-gray-400' />
                       </div>
-                      <Button
-                        type='submit'
-                        disabled={state.status.agentStep !== 'idle'}
-                        className='w-full sm:w-auto lg:w-[200px] bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap'
-                      >
-                        {state.status.agentStep !== 'idle' ? (
-                          <span className='flex items-center gap-2'>
-                            <Loader2 className='h-4 w-4 animate-spin' />
-                            {
-                              {
-                                processing: 'Planning Research...',
-                                searching: 'Searching Web...',
-                                analyzing: 'Analyzing Results...',
-                                generating: 'Writing Report...',
-                              }[state.status.agentStep]
+                      <div className='flex flex-col sm:flex-row lg:flex-nowrap gap-2 sm:items-center'>
+                        <div className='w-full sm:w-[200px]'>
+                          <ModelSelect
+                            value={state.selectedModel}
+                            onValueChange={(value) =>
+                              updateState({ selectedModel: value })
                             }
-                          </span>
-                        ) : (
-                          'Start Deep Research'
-                        )}
+                            triggerClassName='w-full sm:w-[200px]'
+                          />
+                        </div>
+                        <Button
+                          type='submit'
+                          disabled={state.status.agentStep !== 'idle'}
+                          className='w-full sm:w-auto lg:w-[200px] bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap'
+                        >
+                          {state.status.agentStep !== 'idle' ? (
+                            <span className='flex items-center gap-2'>
+                              <Loader2 className='h-4 w-4 animate-spin' />
+                              {
+                                {
+                                  processing: 'Planning Research...',
+                                  searching: 'Searching Web...',
+                                  analyzing: 'Analyzing Results...',
+                                  generating: 'Writing Report...',
+                                }[state.status.agentStep]
+                              }
+                            </span>
+                          ) : (
+                            'Start Deep Research'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className='flex gap-2'>
+                      <Input
+                        type='url'
+                        value={state.newUrl}
+                        onChange={(e) => updateState({ newUrl: e.target.value })}
+                        placeholder='Add custom URL...'
+                        className='flex-1'
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            handleAddCustomUrl(e)
+                          }
+                        }}
+                      />
+                      <Button
+                        type='button'
+                        variant='outline'
+                        onClick={handleAddCustomUrl}
+                        className='hidden sm:inline-flex items-center gap-2'
+                      >
+                        <Plus className='h-4 w-4' />
+                        Add URL
+                      </Button>
+                      <Button
+                        type='button'
+                        variant='outline'
+                        onClick={handleAddCustomUrl}
+                        className='sm:hidden'
+                        size='icon'
+                      >
+                        <Plus className='h-4 w-4' />
                       </Button>
                     </div>
-                  </div>
-                </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="upload-files" className="space-y-4">
+                    <div className='flex flex-col items-center justify-center gap-4 p-8 border-2 border-dashed rounded-lg'>
+                      <div className='relative w-full'>
+                        <Input
+                          type='file'
+                          onChange={handleFileUpload}
+                          className='absolute inset-0 opacity-0 cursor-pointer'
+                          accept={SUPPORTED_FILE_TYPES}
+                          multiple
+                        />
+                        <Button
+                          type='button'
+                          variant='outline'
+                          className='w-full flex items-center justify-center gap-2'
+                        >
+                          <UploadIcon className='h-4 w-4' />
+                          Upload Files
+                        </Button>
+                      </div>
+                      <p className='text-sm text-gray-500'>
+                        Supported formats: TXT, PDF, DOCX
+                      </p>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               )}
             </form>
           </div>
