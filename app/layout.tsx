@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   title: 'Open Deep Research',
   description:
     'Open source alternative to Deep Research. Generate reports with AI based on search results.',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
