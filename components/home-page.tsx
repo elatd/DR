@@ -121,7 +121,7 @@ export default function HomePage() {
           <div className="flex space-x-4 items-center">
             <ModelSelect
               value={selectedModel}
-              onChange={setSelectedModel}
+              onValueChange={setSelectedModel}
             />
             <Select value={timeFilter} onValueChange={setTimeFilter}>
               <SelectTrigger className="w-[180px]">
