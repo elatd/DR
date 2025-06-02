@@ -21,6 +21,10 @@ const zenDots = Zen_Dots({
 export const metadata: Metadata = {
   title: 'Capitalist Sheet',
   description: 'Capitalist Sheet',
+  icons: {
+    icon: '/favicon.ico',
+  },
+
 }
 
 export default function RootLayout({
