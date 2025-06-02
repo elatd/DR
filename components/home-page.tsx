@@ -76,14 +76,9 @@ const retryWithBackoff = async <T,>(
 }
 
 export default function HomePage() {
-  // Rest of the component code from app/page.tsx...
-  ${state.results.length > 0 && (
-    <Tabs
-      value={state.activeTab}
-      onValueChange={(value) => updateState({ activeTab: value })}
-      className='w-full'
-    >
-      // ... Rest of the component implementation
-    </Tabs>
-  )}
+  return (
+    <div>
+      {/* Your actual HomePage component implementation should go here */}
+    </div>
+  )
 }
