@@ -1,6 +1,18 @@
-'use client'
+import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+// Dynamically import the client component with no SSR
+const HomePage = dynamic(() => import('@/components/home-page'), {
+  ssr: false,
+})
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePage />
+    </Suspense>
+  )
+}
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
