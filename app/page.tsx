@@ -832,7 +832,7 @@ export default function Home() {
           <div className='mb-3'>
             <h1 className='mb-2 text-center text-gray-800 flex items-center justify-center gap-2'>
               <img
-                src='/apple-icon.png'
+                src='/public/capitalistsheet.png'
                 alt='Capitalist Sheet'
                 className='w-6 h-6 sm:w-8 sm:h-8 rounded-full'
               />
