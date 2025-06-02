@@ -863,21 +863,6 @@ export default function Home() {
                   <Brain className='h-4 w-4' />
                   View Knowledge Base
                 </Button>
-                <Button
-                  asChild
-                  variant='outline'
-                  size='sm'
-                  className='inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm rounded-full'
-                >
-                  <a
-                    href='https://github.com/btahir/open-deep-research'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    <Code className='h-4 w-4' />
-                    View Code
-                  </a>
-                </Button>
               </div>
               <div className='flex justify-center items-center'>
                 <div className='flex items-center space-x-2'>
