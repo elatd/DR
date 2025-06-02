@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shader Background Indigo Light</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<canvas id="shader-bg"></canvas>
+<script>
+const canvas = document.getElementById('shader-bg');
+const ctx = canvas.getContext('2d');
+let dpr = window.devicePixelRatio || 1;
+
+function resize() {
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function smoothstep(a, b, t) {
+  t = Math.max(0, Math.min(1, (t - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+}
+
+function rotate(x, y, angle) {
+  const s = Math.sin(angle);
+  const c = Math.cos(angle);
+  return [c * x - s * y, s * x + c * y];
+}
+
+function hash(p) {
+  const x = Math.sin(p[0] * 127.1 + p[1] * 311.7) * 43758.5453123;
+  return x - Math.floor(x);
+}
+
+function noise(p) {
+  const i0 = Math.floor(p[0]), i1 = Math.floor(p[1]);
+  const f0 = p[0] - i0, f1 = p[1] - i1;
+  const u0 = f0 * f0 * (3.0 - 2.0 * f0), u1 = f1 * f1 * (3.0 - 2.0 * f1);
+
+  const n00 = hash([i0 + 0, i1 + 0]);
+  const n10 = hash([i0 + 1, i1 + 0]);
+  const n01 = hash([i0 + 0, i1 + 1]);
+  const n11 = hash([i0 + 1, i1 + 1]);
+
+  const nx0 = lerp(n00, n10, u0);
+  const nx1 = lerp(n01, n11, u0);
+  return lerp(nx0, nx1, u1);
+}
+
+// Lightened colors
+const colorYellow = [248, 225, 197];
+const colorDeepBlue = [131, 161, 245];
+const colorIndigo = [148, 140, 220];
+const colorBlue = [155, 211, 248];
+
+function draw(time) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const ratio = w / h;
+
+  const step = Math.max(4, Math.floor(dpr * 6));
+
+  const slowTime = time * 0.0002;
+
+  for (let y = 0; y < h; y += step) {
+    for (let x = 0; x < w; x += step) {
+      let uvx = x / w;
+      let uvy = y / h;
+      let tuvx = uvx - 0.5;
+      let tuvy = uvy - 0.5;
+
+      let degree = noise([slowTime * 0.3, tuvx * tuvy]);
+      let angle = ((degree - 0.5) * 4 + 1) * Math.PI;
+
+      let y1 = tuvy * (1.0 / ratio);
+      let rot = rotate(tuvx, y1, angle);
+      rot[1] *= ratio;
+
+      let frequency = 5.0;
+      let amplitude = 30.0;
+      let speed = slowTime * 2.0;
+
+      rot[0] += Math.sin(rot[1] * frequency + speed) / amplitude;
+      rot[1] += Math.sin(rot[0] * frequency * 1.5 + speed) / (amplitude * 0.5);
+
+      let r1 = rotate(rot[0], rot[1], -Math.PI / 36);
+      let t1 = smoothstep(-0.3, 0.2, r1[0]);
+      let layer1 = [
+        lerp(colorYellow[0], colorDeepBlue[0], t1),
+        lerp(colorYellow[1], colorDeepBlue[1], t1),
+        lerp(colorYellow[2], colorDeepBlue[2], t1)
+      ];
+
+      let t2 = smoothstep(-0.3, 0.2, r1[0]);
+      let layer2 = [
+        lerp(colorIndigo[0], colorBlue[0], t2),
+        lerp(colorIndigo[1], colorBlue[1], t2),
+        lerp(colorIndigo[2], colorBlue[2], t2)
+      ];
+
+      let t3 = smoothstep(0.5, -0.3, rot[1]);
+      let finalColor = [
+        lerp(layer1[0], layer2[0], t3),
+        lerp(layer1[1], layer2[1], t3),
+        lerp(layer1[2], layer2[2], t3)
+      ];
+
+      ctx.fillStyle = `rgb(${finalColor.map(v => Math.round(v)).join(',')})`;
+      ctx.fillRect(x, y, step, step);
+    }
+  }
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
