@@ -22,7 +22,12 @@ export const metadata: Metadata = {
   title: 'Capitalist Sheet',
   description: 'Capitalist Sheet',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      {
+        url: '/favicon.ico',
+        sizes: 'any',
+      },
+    ],
   },
 
 }
