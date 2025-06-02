@@ -824,22 +824,11 @@ export default function Home() {
 
   return (
     <div className='min-h-screen bg-white p-4 sm:p-8'>
-      <div className='fixed inset-x-0 top-0 bg-blue-50 border-b border-blue-100 p-4 flex items-center justify-center gap-4 z-50'>
-        <Button
-          asChild
-          variant='default'
-          size='sm'
-          className='whitespace-nowrap bg-blue-600 hover:bg-blue-700'
-        >
-          <a href='/flow'>Try Flow →</a>
-        </Button>
-      </div>
-      <div className='pt-20'>
-        <KnowledgeBaseSidebar
+      <KnowledgeBaseSidebar
           open={state.sidebarOpen}
           onOpenChange={(open) => updateState({ sidebarOpen: open })}
         />
-        <main className='max-w-4xl mx-auto space-y-8'>
+      <main className='max-w-4xl mx-auto space-y-8'>
           <div className='mb-3'>
             <h1 className='mb-2 text-center text-gray-800 flex items-center justify-center gap-2'>
               <img
@@ -1327,7 +1316,6 @@ export default function Home() {
             </Tabs>
           )}
         </main>
-      </div>
     </div>
   )
 }
