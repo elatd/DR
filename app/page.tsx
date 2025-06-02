@@ -185,37 +185,11 @@ export default function Home() {
 
   // Memoized result selection handler
   const handleResultSelect = useCallback((resultId: string) => {
-    setState((prev: State) => {
-      if (prev.selectedResults.includes(resultId)) {
-        return {
-          ...prev,
-          selectedResults: prev.selectedResults.filter((id) => id !== resultId),
-          reportPrompt:
-            prev.selectedResults.length <= 1 ? '' : prev.reportPrompt,
-        }
-      }
-      if (prev.selectedResults.length >= MAX_SELECTIONS) return prev
-
-      const newSelectedResults = [...prev.selectedResults, resultId]
-      let newReportPrompt = prev.reportPrompt
-
-      if (
-        !prev.isAgentMode &&
-        newSelectedResults.length === 1 &&
-        !prev.reportPrompt
-      ) {
-        const result = prev.results.find((r) => r.id === resultId)
-        if (result) {
-          newReportPrompt = `Analyze and summarize the key points from ${result.name}`
-        }
-      }
-
-      return {
-        ...prev,
-        selectedResults: newSelectedResults,
-        reportPrompt: newReportPrompt,
-      }
-    })
+    setState((prev: State) => ({
+      ...prev,
+      results: prev.results.filter((r) => r.id !== resultId),
+      selectedResults: prev.selectedResults.filter((id) => id !== resultId),
+    }))
   }, [])
 
   // Memoized search handler
@@ -824,125 +798,132 @@ export default function Home() {
   return (
     <div className='min-h-screen bg-white p-4 sm:p-8'>
       <KnowledgeBaseSidebar
-          open={state.sidebarOpen}
-          onOpenChange={(open) => updateState({ sidebarOpen: open })}
-        />
+        open={state.sidebarOpen}
+        onOpenChange={(open) => updateState({ sidebarOpen: open })}
+      />
       <main className='max-w-4xl mx-auto space-y-8'>
-          <div className='mb-3'>
-            <h1 className='mb-2 text-center text-gray-800 flex items-center justify-center gap-2'>
-              <img
-                src='/capitalistsheet.png'
-                alt='Capitalist Sheet'
-                className='w-6 h-6 sm:w-8 sm:h-8 rounded-full'
-              />
-              <span className='text-xl sm:text-3xl font-bold font-heading'>
-                Capitalist Sheet
-              </span>
-            </h1>
-            <div className='text-center space-y-3 mb-8'>
-              <p className='text-gray-600'>Capitalist Sheet</p>
-              <div className='flex flex-wrap justify-center items-center gap-2'>
-                <Button
-                  variant='default'
-                  size='sm'
-                  onClick={() => updateState({ sidebarOpen: true })}
-                  className='inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm rounded-full'
-                >
-                  <Brain className='h-4 w-4' />
-                  View Knowledge Base
-                </Button>
+        <div className='mb-3'>
+          <h1 className='mb-2 text-center text-gray-800 flex items-center justify-center gap-2'>
+            <img
+              src='/capitalistsheet.png'
+              alt='Capitalist Sheet'
+              className='w-6 h-6 sm:w-8 sm:h-8 rounded-full'
+            />
+            <span className='text-xl sm:text-3xl font-bold font-heading'>
+              Capitalist Sheet
+            </span>
+          </h1>
+          <div className='text-center space-y-3 mb-8'>
+            <p className='text-gray-600'>Capitalist Sheet</p>
+            <div className='flex flex-wrap justify-center items-center gap-2'>
+              <Button
+                variant='default'
+                size='sm'
+                onClick={() => updateState({ sidebarOpen: true })}
+                className='inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm rounded-full'
+              >
+                <Brain className='h-4 w-4' />
+                View Knowledge Base
+              </Button>
+            </div>
+          </div>
+          {state.status.agentStep !== 'idle' && state.status.agentStep !== 'processing' && (
+            <div className='mb-4 p-4 bg-blue-50 rounded-lg'>
+              <div className='flex items-center gap-3 mb-3'>
+                <Loader2 className='h-5 w-5 text-blue-600 animate-spin' />
+                <h3 className='font-semibold text-blue-800'>
+                  Agent Progress
+                </h3>
+              </div>
+
+              <div className='space-y-2'>
+                <div className='flex items-center gap-2 text-sm'>
+                  <span className='font-medium'>Current Step:</span>
+                  <span className='capitalize'>{state.status.agentStep}</span>
+                </div>
+
+                {state.status.agentInsights.length > 0 && (
+                  <Collapsible>
+                    <CollapsibleTrigger className='text-sm text-blue-600 hover:underline flex items-center gap-1'>
+                      Show Research Details{' '}
+                      <ChevronDown className='h-4 w-4' />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className='mt-2 space-y-2 text-sm text-gray-600'>
+                      {state.status.agentInsights.map((insight, idx) => (
+                        <div key={idx} className='flex gap-2'>
+                          <span className='text-gray-400'>•</span>
+                          {insight}
+                        </div>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                )}
               </div>
             </div>
-            {state.status.agentStep !== 'idle' && state.status.agentStep !== 'processing' && (
-              <div className='mb-4 p-4 bg-blue-50 rounded-lg'>
-                <div className='flex items-center gap-3 mb-3'>
-                  <Loader2 className='h-5 w-5 text-blue-600 animate-spin' />
-                  <h3 className='font-semibold text-blue-800'>
-                    Agent Progress
-                  </h3>
+          )}
+          <form
+            ref={formRef}
+            onSubmit={handleAgentSearch}
+            className='space-y-4'
+          >
+            <div className='space-y-4 sm:space-y-6 lg:space-y-0'>
+              <div className='flex flex-col sm:flex-row lg:items-center gap-2'>
+                <div className='relative flex-1'>
+                  <Input
+                    value={state.reportPrompt}
+                    onChange={(e) => {
+                      updateState({ reportPrompt: e.target.value })
+                    }}
+                    placeholder="What would you like to research? (e.g., 'Tesla Q4 2024 financial performance and market impact')"
+                    className='pr-8 text-lg'
+                  />
+                  <Brain className='absolute right-4 top-3 h-5 w-5 text-gray-400' />
                 </div>
-
-                <div className='space-y-2'>
-                  <div className='flex items-center gap-2 text-sm'>
-                    <span className='font-medium'>Current Step:</span>
-                    <span className='capitalize'>{state.status.agentStep}</span>
+                <div className='flex flex-col sm:flex-row lg:flex-nowrap gap-2 sm:items-center'>
+                  <div className='w-full sm:w-[200px]'>
+                    <ModelSelect
+                      value={state.selectedModel}
+                      onValueChange={(value) =>
+                        updateState({ selectedModel: value })
+                      }
+                      triggerClassName='w-full sm:w-[200px]'
+                    />
                   </div>
-
-                  {state.status.agentInsights.length > 0 && (
-                    <Collapsible>
-                      <CollapsibleTrigger className='text-sm text-blue-600 hover:underline flex items-center gap-1'>
-                        Show Research Details{' '}
-                        <ChevronDown className='h-4 w-4' />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className='mt-2 space-y-2 text-sm text-gray-600'>
-                        {state.status.agentInsights.map((insight, idx) => (
-                          <div key={idx} className='flex gap-2'>
-                            <span className='text-gray-400'>•</span>
-                            {insight}
-                          </div>
-                        ))}
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )}
+                  <Button
+                    type='submit'
+                    disabled={state.status.agentStep !== 'idle'}
+                    className='w-full sm:w-auto lg:w-[200px] bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap'
+                  >
+                    {state.status.agentStep !== 'idle' ? (
+                      <span className='flex items-center gap-2'>
+                        <Loader2 className='h-4 w-4 animate-spin' />
+                        {
+                          {
+                            processing: 'Planning Research...',
+                            searching: 'Searching Web...',
+                            analyzing: 'Analyzing Results...',
+                            generating: 'Writing Report...',
+                          }[state.status.agentStep]
+                        }
+                      </span>
+                    ) : (
+                      'Start Deep Research'
+                    )}
+                  </Button>
                 </div>
               </div>
-            )}
-            <form
-              ref={formRef}
-              onSubmit={handleAgentSearch}
-              className='space-y-4'
-            >
-                <div className='space-y-4 sm:space-y-6 lg:space-y-0'>
-                  <div className='flex flex-col sm:flex-row lg:items-center gap-2'>
-                    <div className='relative flex-1'>
-                      <Input
-                        value={state.reportPrompt}
-                        onChange={(e) => {
-                          updateState({ reportPrompt: e.target.value })
-                        }}
-                        placeholder="What would you like to research? (e.g., 'Tesla Q4 2024 financial performance and market impact')"
-                        className='pr-8 text-lg'
-                      />
-                      <Brain className='absolute right-4 top-3 h-5 w-5 text-gray-400' />
-                    </div>
-                    <div className='flex flex-col sm:flex-row lg:flex-nowrap gap-2 sm:items-center'>
-                      <div className='w-full sm:w-[200px]'>
-                        <ModelSelect
-                          value={state.selectedModel}
-                          onValueChange={(value) =>
-                            updateState({ selectedModel: value })
-                          }
-                          triggerClassName='w-full sm:w-[200px]'
-                        />
-                      </div>
-                      <Button
-                        type='submit'
-                        disabled={state.status.agentStep !== 'idle'}
-                        className='w-full sm:w-auto lg:w-[200px] bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap'
-                      >
-                        {state.status.agentStep !== 'idle' ? (
-                          <span className='flex items-center gap-2'>
-                            <Loader2 className='h-4 w-4 animate-spin' />
-                            {
-                              {
-                                processing: 'Planning Research...',
-                                searching: 'Searching Web...',
-                                analyzing: 'Analyzing Results...',
-                                generating: 'Writing Report...',
-                              }[state.status.agentStep]
-                            }
-                          </span>
-                        ) : (
-                          'Start Deep Research'
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-            </form>
+            </div>
+          </form>
+        </div>
+
+        <Separator className='my-8' />
+
+        {state.error && (
+          <div className='p-4 mb-4 bg-red-50 text-red-900 rounded-lg'>
+            {state.error}
           </div>
-
-          <Separator className='my-8' />
-
-          {state.error && (
-            <div className='p-4 mb-4 
+        )}
+      </main>
+    </div>
+  )
+}
