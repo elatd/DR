@@ -8,15 +8,18 @@ export async function handleLocalFile(
   try {
     onStatusUpdate?.(true)
 
+    // Decode filename to handle UTF-8 characters properly
+    const decodedFilename = decodeURIComponent(file.name)
+
     let content = ''
-    if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+    if (file.type === 'text/plain' || decodedFilename.endsWith('.txt')) {
       content = await file.text()
     } else if (
       file.type === 'application/pdf' ||
-      file.name.endsWith('.pdf') ||
+      decodedFilename.endsWith('.pdf') ||
       file.type ===
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-      file.name.endsWith('.docx')
+      decodedFilename.endsWith('.docx')
     ) {
       // Send the file to our parsing endpoint
       const formData = new FormData()
@@ -48,9 +51,9 @@ export async function handleLocalFile(
     // Create a search result from the file
     const timestamp = Date.now()
     const newResult: SearchResult = {
-      id: `file-${timestamp}-${file.name}`,
+      id: `file-${timestamp}-${encodeURIComponent(decodedFilename)}`,
       url: URL.createObjectURL(file),
-      name: file.name,
+      name: decodedFilename,
       snippet: snippet,
       isCustomUrl: true,
       content: content, // Store full content for report generation
