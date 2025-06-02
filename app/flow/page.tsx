@@ -1287,7 +1287,7 @@ function Flow() {
             <div className='flex-shrink-0 flex items-center'>
               <Link href='/' className='font-bold text-xl text-primary'>
                 <img
-                  src='/apple-icon.png'
+                  src='/public/capitalistsheet.png'
                   alt='Capitalist Sheet'
                   className='h-8 w-8 rounded-full'
                 />
