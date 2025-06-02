@@ -17,7 +17,7 @@ export const CONFIG = {
       google: 'active' as 'active' | 'off',
       bing: 'moderate' as 'moderate' | 'strict' | 'off',
     },
-    market: 'en-US',
+    market: 'ja-JP',
   },
 
   // AI Platform settings
