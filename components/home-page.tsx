@@ -76,9 +76,98 @@ const retryWithBackoff = async <T,>(
 }
 
 export default function HomePage() {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [timeFilter, setTimeFilter] = useState<typeof timeFilters[number]['value']>('all')
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL)
+  const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
+
   return (
-    <div>
-      {/* Your actual HomePage component implementation should go here */}
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col space-y-8">
+        {/* Search Section */}
+        <div className="flex flex-col space-y-4">
+          <div className="flex space-x-4">
+            <Input
+              placeholder="Enter your search query..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1"
+            />
+            <Button
+              onClick={() => {
+                if (!searchQuery.trim()) {
+                  toast({
+                    title: "Error",
+                    description: "Please enter a search query",
+                    variant: "destructive"
+                  })
+                  return
+                }
+                setIsLoading(true)
+                // Search functionality would be implemented here
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
+              <span className="ml-2">Search</span>
+            </Button>
+          </div>
+
+          <div className="flex space-x-4 items-center">
+            <ModelSelect
+              value={selectedModel}
+              onChange={setSelectedModel}
+            />
+            <Select value={timeFilter} onValueChange={setTimeFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select time range" />
+              </SelectTrigger>
+              <SelectContent>
+                {timeFilters.map((filter) => (
+                  <SelectItem key={filter.value} value={filter.value}>
+                    {filter.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Results Section */}
+        <div className="space-y-4">
+          <Tabs defaultValue="results">
+            <TabsList>
+              <TabsTrigger value="results">Results</TabsTrigger>
+              <TabsTrigger value="knowledge-base">Knowledge Base</TabsTrigger>
+            </TabsList>
+            <TabsContent value="results">
+              <Card>
+                <CardContent className="p-6">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                    </div>
+                  ) : (
+                    <p className="text-center text-gray-500">
+                      Enter a search query to see results
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="knowledge-base">
+              <KnowledgeBaseSidebar />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <CitationsFooter />
+      </div>
     </div>
   )
 }
