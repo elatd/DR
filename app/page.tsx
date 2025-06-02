@@ -824,11 +824,7 @@ export default function Home() {
 
   return (
     <div className='min-h-screen bg-white p-4 sm:p-8'>
-      <div className='fixed inset-x-0 top-0 bg-blue-50 border-b border-blue-100 p-4 flex flex-col sm:flex-row items-center justify-center gap-4 z-50'>
-        <p className='text-blue-800 text-center'>
-          <span className='font-semibold'>New:</span> Try our Visual Flow
-          feature for deep, recursive research
-        </p>
+      <div className='fixed inset-x-0 top-0 bg-blue-50 border-b border-blue-100 p-4 flex items-center justify-center gap-4 z-50'>
         <Button
           asChild
           variant='default'
@@ -848,18 +844,15 @@ export default function Home() {
             <h1 className='mb-2 text-center text-gray-800 flex items-center justify-center gap-2'>
               <img
                 src='/apple-icon.png'
-                alt='Open Deep Research'
+                alt='Capitalist Sheet'
                 className='w-6 h-6 sm:w-8 sm:h-8 rounded-full'
               />
               <span className='text-xl sm:text-3xl font-bold font-heading'>
-                Open Deep Research
+                Capitalist Sheet
               </span>
             </h1>
             <div className='text-center space-y-3 mb-8'>
-              <p className='text-gray-600'>
-                Open source alternative to Deep Research. Generate reports with
-                AI based on search results.
-              </p>
+              <p className='text-gray-600'>Capitalist Sheet</p>
               <div className='flex flex-wrap justify-center items-center gap-2'>
                 <Button
                   variant='default'

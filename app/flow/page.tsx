@@ -1288,7 +1288,7 @@ function Flow() {
               <Link href='/' className='font-bold text-xl text-primary'>
                 <img
                   src='/apple-icon.png'
-                  alt='Open Deep Research'
+                  alt='Capitalist Sheet'
                   className='h-8 w-8 rounded-full'
                 />
               </Link>
